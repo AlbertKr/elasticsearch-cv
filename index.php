@@ -83,6 +83,7 @@ if (isset($_GET['global_search'])) {
 if (isset($query) && $query['hits']['total'] >= 1) {
     $results = $query['hits']['hits'];
 }
+// print_r($results);die();
 ?>
 
 <!doctype html>
@@ -147,32 +148,55 @@ if (isset($query) && $query['hits']['total'] >= 1) {
     if (isset($results)) {
         foreach ($results as $r) {
             ?>
+            <?php
+            if (!isset($r['_source']['content'])) {
+                ?>
+                <div class="result">
+                    <div class="div_result">
+                        <a href="#<?php echo $r['_id']; ?>" class="result-identity"><?php echo $r['_source']['name']; ?> <?php echo $r['_source']['firstname']; ?></a>
+                        <div>
+                            <p class="p_result">Diplômes</p>
+                            <div class="result-diplomas"><?php echo implode(", ", $r['_source']['diplomas']); ?></div>
+                        </div>
+                        <div>
+                            <p class="p_result">Expériences</p>
+                            <div class="result-experience"><?php echo implode(", ", $r['_source']['experience']); ?></div>
+                        </div>
+                        <div>
+                            <p class="p_result">Compétences</p>
+                            <div class="result-competence"><?php echo implode(", ", $r['_source']['competence']); ?></div>
+                        </div>
+                        <div>
+                            <p class="p_result">Hobbies</p>
+                            <div class="result-hobbies"><?php echo implode(", ", $r['_source']['hobbies']); ?></div>
+                        </div>
+                    </div>
+                    <form id="form_profile_redirect" action="profile.php" method="post" autocomplete="off">
+                        <input type="hidden" name="id" value="<?php echo $r['_id']; ?>">
+                        <input type="submit" id="profile_access" value="Accéder à sa fiche">
+                    </form>
+                </div>
+            <?php
+            } else {
 
-            <div class="result">
-                <div class="div_result">
-                    <a href="#<?php echo $r['_id']; ?>" class="result-identity"><?php echo $r['_source']['name']; ?> <?php echo $r['_source']['firstname']; ?></a>
-                    <div>
-                        <p class="p_result">Diplômes</p>
-                        <div class="result-diplomas"><?php echo implode(", ", $r['_source']['diplomas']); ?></div>
-                    </div>
-                    <div>
-                        <p class="p_result">Expériences</p>
-                        <div class="result-experience"><?php echo implode(", ", $r['_source']['experience']); ?></div>
-                    </div>
-                    <div>
-                        <p class="p_result">Compétences</p>
-                        <div class="result-competence"><?php echo implode(", ", $r['_source']['competence']); ?></div>
-                    </div>
-                    <div>
-                        <p class="p_result">Hobbies</p>
-                        <div class="result-hobbies"><?php echo implode(", ", $r['_source']['hobbies']); ?></div>
+                $pdf_decoded = base64_decode($r['_source']['content']);
+                $pdf = fopen($r['_id'] . '.pdf', 'w');
+                fwrite($pdf, $pdf_decoded);
+                fclose($pdf);
+                ?>
+
+                <div class="result">
+                    <div class="div_result">
+                        <a href="#<?php echo $r['_id']; ?>" class="result-identity"><?php echo $r['_source']['name']; ?> <?php echo $r['_source']['firstname']; ?></a>
+                        <div>
+                            <p class="p_result">PDF</p>
+                            <a href="<?php echo $r['_id']; ?>.pdf" target="_blank" class="result-hobbies"> Cliquez ici pour ouvrir le CV </a>
+                        </div>
                     </div>
                 </div>
-                <form id="form_profile_redirect" action="profile.php" method="post" autocomplete="off">
-                    <input type="hidden" name="id" value="<?php echo $r['_id']; ?>">
-                    <input type="submit" id="profile_access" value="Accéder à sa fiche">
-                </form>
-            </div>
+            <?php
+            }
+            ?>
         <?php
         }
     }

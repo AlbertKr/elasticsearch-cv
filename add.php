@@ -2,7 +2,7 @@
 
 require_once 'app/init.php';
 
-if (!empty($_POST)) {
+if (!empty($_POST['diplomas'])) {
     if (isset($_POST['name'], $_POST['firstname'], $_POST['diplomas'], $_POST['experience'], $_POST['competence'], $_POST['hobbies'])) {
         $name = $_POST['name'];
         $firstname = $_POST['firstname'];
@@ -24,6 +24,36 @@ if (!empty($_POST)) {
             ]
         ]);
     }
+} else if (isset($_FILES['pdf_file'])) {
+    $name = $_POST['name'];
+    $firstname = $_POST['firstname'];
+    $params = [
+        'id' => 'attachment',
+        'body' => [
+            'description' => 'Extract attachment information',
+            'processors' => [
+                [
+                    'attachment' => [
+                        'field' => 'content',
+                        'indexed_chars' => -1
+                    ]
+                ]
+            ]
+        ]
+    ];
+    $es->ingest()->putPipeline($params);
+
+    $params = [
+        'index' => 'cvs',
+        'type'  => 'cv',
+        'id'    => explode('.', $_FILES['pdf_file']['size'] . explode("\\", $_FILES['pdf_file']['tmp_name'])[3])[0],
+        'body'  => [
+            'name' => $name,
+            'firstname' => $firstname,
+            'content' => base64_encode(file_get_contents($_FILES['pdf_file']['tmp_name']))
+        ]
+    ];
+    $indexed = $es->index($params);
 }
 
 ?>
@@ -78,16 +108,24 @@ if (!empty($_POST)) {
             </form>
         </diV>
 
-        <!-- <div id="div_file">
+        <div id="div_file">
             <h2>Via un fichier PDF</h2>
-            <form action="add.php" method="post" autocomplete="off" class="form-file">
+            <form action="add.php" method="post" enctype="multipart/form-data" class="form-file">
+                <label>
+                    <p>Nom : </p>
+                    <input type="text" name="name">
+                </label>
+                <label>
+                    <p>Prénom : </p>
+                    <input type="text" name="firstname">
+                </label>
                 <label>
                     <p>Sélectionnez votre CV (Format PDF) : </p>
                     <input type="file" name="pdf_file">
                 </label>
                 <input type="submit" value="Envoyer !">
             </form>
-        </diV> -->
+        </diV>
     </diV>
 </body>
 

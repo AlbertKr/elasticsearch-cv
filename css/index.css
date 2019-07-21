@@ -143,6 +143,8 @@ h2 {
 
 .result-hobbies {
     display: block;
+    text-decoration: none;
+    color: black;
     font-size: 13px;
     margin-bottom: 10px;
 }
