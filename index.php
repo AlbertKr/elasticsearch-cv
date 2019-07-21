@@ -44,29 +44,7 @@ if (isset($_GET['global_search'])) {
             ]
         ]
     ]);
-} else if (isset($_GET['identity_search'])) {
-    $identity_search = $_GET['identity_search'];
-    $query = $es->search([
-        'body' => [
-            'query' => [
-                'bool' => [
-                    "should" => [
-                        [
-                            "match" => [
-                                "name" => $identity_search
-                            ]
-                        ],
-                        [
-                            "match" => [
-                                "firstname" => $identity_search
-                            ]
-                        ]
-                    ]
-                ]
-            ]
-        ]
-    ]);
-}else if (isset($_GET['diplomas_search'])) {
+} else if (isset($_GET['diplomas_search'])) {
     $diplomas_search = $_GET['diplomas_search'];
     $query = $es->search([
         'body' => [
@@ -83,7 +61,7 @@ if (isset($_GET['global_search'])) {
             ]
         ]
     ]);
-}else if (isset($_GET['competences_search'])) {
+} else if (isset($_GET['competences_search'])) {
     $competences_search = $_GET['competences_search'];
     $query = $es->search([
         'body' => [
@@ -112,34 +90,52 @@ if (isset($query) && $query['hits']['total'] >= 1) {
 
 <head>
     <meta charset="utf-8">
-    <title>ES Projet</title>
+    <title>Recherche de CV</title>
 
     <link rel="stylesheet" href="css/index.css">
 </head>
 
 <body>
-    <form action="index.php" method="get" autocomplete="off">
+
+    <div id="div_header">
+        <div>
+            <p>Sélectionnez un type de recherche :</p>
+            <div id="div_search_js">
+                <div class="div_radio">
+                    <input type="radio" id="global" onChange="change()" name="search" value="Global" checked>
+                    <label for="global">Global</label>
+                </div>
+
+                <div class="div_radio">
+                    <input type="radio" id="diplomas" onChange="change()" name="search" value="Diplômes">
+                    <label for="diplomas">Diplômes</label>
+                </div>
+
+                <div class="div_radio">
+                    <input type="radio" id="competences" onChange="change()" name="search" value="Compétences">
+                    <label for="competences">Compétences</label>
+                </div>
+            </div>
+        </div>
+        <a href="add.php">
+            <button> Ajouter un CV </button>
+        </a>
+    </div>
+    <form id="form_global" action="index.php" method="get" autocomplete="off">
         <label>
             <p> Recherche Global : </p>
             <input type="text" name="global_search">
             <input type="submit" style="margin-left: 15px;" value="Rechercher">
         </label>
     </form>
-    <form action="index.php" method="get" autocomplete="off">
-        <label>
-            <p> Recherche sur l'identité : </p>
-            <input type="text" name="identity_search">
-            <input type="submit" style="margin-left: 15px;" value="Rechercher">
-        </label>
-    </form>
-    <form action="index.php" method="get" autocomplete="off">
+    <form id="form_diplomas" action="index.php" method="get" autocomplete="off" style="display:none;">
         <label>
             <p> Recherche sur les diplômes : </p>
             <input type="text" name="diplomas_search">
             <input type="submit" style="margin-left: 15px;" value="Rechercher">
         </label>
     </form>
-    <form action="index.php" method="get" autocomplete="off">
+    <form id="form_competences" action="index.php" method="get" autocomplete="off" style="display:none;">
         <label>
             <p> Recherche sur les compétences : </p>
             <input type="text" name="competences_search">
@@ -153,11 +149,29 @@ if (isset($query) && $query['hits']['total'] >= 1) {
             ?>
 
             <div class="result">
-                <a href="#<?php echo $r['_id']; ?>"><?php echo $r['_source']['name']; ?> <?php echo $r['_source']['firstname']; ?></a>
-                <div class="result-diplomas"><?php echo implode(',', $r['_source']['diplomas']); ?></div>
-                <div class="result-experience"><?php echo implode(',', $r['_source']['experience']); ?></div>
-                <div class="result-competence"><?php echo implode(',', $r['_source']['competence']); ?></div>
-                <div class="result-hobbies"><?php echo implode(',', $r['_source']['hobbies']); ?></div>
+                <div class="div_result">
+                    <a href="#<?php echo $r['_id']; ?>" class="result-identity"><?php echo $r['_source']['name']; ?> <?php echo $r['_source']['firstname']; ?></a>
+                    <div>
+                        <p class="p_result">Diplômes</p>
+                        <div class="result-diplomas"><?php echo implode(", ", $r['_source']['diplomas']); ?></div>
+                    </div>
+                    <div>
+                        <p class="p_result">Expériences</p>
+                        <div class="result-experience"><?php echo implode(", ", $r['_source']['experience']); ?></div>
+                    </div>
+                    <div>
+                        <p class="p_result">Compétences</p>
+                        <div class="result-competence"><?php echo implode(", ", $r['_source']['competence']); ?></div>
+                    </div>
+                    <div>
+                        <p class="p_result">Hobbies</p>
+                        <div class="result-hobbies"><?php echo implode(", ", $r['_source']['hobbies']); ?></div>
+                    </div>
+                </div>
+                <form id="form_profile_redirect" action="profile.php" method="post" autocomplete="off">
+                    <input type="hidden" name="id" value="<?php echo $r['_id']; ?>">
+                    <input type="submit" id="profile_access" value="Accéder à sa fiche">
+                </form>
             </div>
         <?php
         }
@@ -165,5 +179,6 @@ if (isset($query) && $query['hits']['total'] >= 1) {
 
     ?>
 </body>
+<script type="text/javascript" src="./app/script.js"></script>
 
 </html>

@@ -23,10 +23,6 @@ if (!empty($_POST)) {
                 'hobbies' => $hobbies
             ]
         ]);
-
-        // if ($indexed) {
-        //     print_r($indexed);
-        // }
     }
 }
 

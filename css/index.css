@@ -2,7 +2,7 @@ html {
     background-color: rgb(240, 240, 240);
 }
 
-input,
+input[type=text],
 textarea {
     border: 1px solid grey;
     border-radius: 5px;
@@ -21,7 +21,7 @@ label {
 }
 
 p {
-    width: 220px;
+    width: 235px;
 }
 
 input[type=submit] {
@@ -92,4 +92,71 @@ h2 {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+#div_search_js {
+    display: flex;
+}
+
+.div_radio {
+    display: flex;
+}
+
+.result {
+    display: flex;
+    align-items: center;
+    border: 1px solid black;
+    border-radius: 5px;
+    background-color: white;
+    padding: 5px;
+    margin: auto;
+    width: 65%;
+    margin-top: 15px;
+}
+
+.result-identity {
+    display: block;
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.result-diplomas {
+    display: block;
+    font-size: 13px;
+    margin-bottom: 10px;
+}
+
+.result-experience {
+    display: block;
+    font-size: 13px;
+    margin-bottom: 10px;
+}
+
+.result-competence {
+    display: block;
+    font-size: 13px;
+    margin-bottom: 10px;
+}
+
+.result-hobbies {
+    display: block;
+    font-size: 13px;
+    margin-bottom: 10px;
+}
+
+.p_result {
+    font-style: italic;
+    font-size: 15px;
+    text-decoration: underline;
+}
+
+#profile_access {
+    width: 200px;
+}
+
+.div_result {
+    width: 65%;
 }
