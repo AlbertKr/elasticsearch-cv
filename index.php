@@ -4,6 +4,7 @@ require_once 'app/init.php';
 
 if (isset($_GET['global_search'])) {
     $global_search = $_GET['global_search'];
+    
     $query = $es->search([
         'body' => [
             'query' => [
@@ -83,7 +84,7 @@ if (isset($_GET['global_search'])) {
 if (isset($query) && $query['hits']['total'] >= 1) {
     $results = $query['hits']['hits'];
 }
-// print_r($results);die();
+
 ?>
 
 <!doctype html>
